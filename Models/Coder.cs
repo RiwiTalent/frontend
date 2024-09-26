@@ -13,6 +13,7 @@ namespace riwi.Models
         public string? SecondName { get; set; }
         public string? FirstLastName { get; set; }
         public string? SecondLastName { get; set; }
+        public string? ProfessionalDescription { get; set; }
         public string? Email { get; set; }
         public string? Photo { get; set; }
         public int Age { get; set; }

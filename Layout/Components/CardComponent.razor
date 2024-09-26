@@ -1,9 +1,11 @@
+@using riwi.Layout.Components.Modal
 @using riwi.Services;
 @using riwi.Models;
 @using MudBlazor;
 @inject CoderService coderService
 @inject IModalService model
 @using riwi.Theme;
+@inject IDialogService DialogService
 
 
 @*Filtrado - Coder*@
@@ -11,7 +13,7 @@
     
         <!-- Botón "Filtrar por" -->
     @* <MudButton OnClick="FilterCoders" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.FilterList" 
-               Style="@($"background-color: {RiwiPalette.Secondary500};")" Size="Size.Small">
+            Style="@($"background-color: {RiwiPalette.Secondary500};")" Size="Size.Small">
         Filtrar
     </MudButton> *@
 
@@ -65,10 +67,12 @@
                 </MudButton>
             </option>
                 
-            
+                
         </InputSelect>
 
     </MudPaper>
+
+    
 
     <!-- Botón para aplicar el filtro. -->
     @* <MudButton OnClick="FilterCoders" Variant="Variant.Filled" Color="Color.Primary" Class="filter-button">
@@ -80,6 +84,43 @@
         Limpiar
     </MudButton> *@
 </MudPaper>
+
+
+
+@* new *@
+<MudPaper Height="200px" Style="overflow:hidden; position:relative;">
+    <MudDrawerContainer>
+        <MudDrawer @bind-Open="@_open" Anchor="Anchor.End" Fixed="false" Elevation="1" Variant="@DrawerVariant.Mini" OpenMiniOnHover="true">
+            <MudNavMenu>
+                    <MudChipSet T="string" AllClosable OnClose="RemoveCoderFromGroup">
+                        @foreach (var selectedCoder in _selectedCoders)
+                        {
+                            
+                            <MudChip Text="@($"{selectedCoder.FirstName} {selectedCoder.FirstLastName}")">
+                            <AvatarContent>
+                                <MudAvatar>
+                                    <MudImage Src="@selectedCoder.Photo"></MudImage>
+                                </MudAvatar>
+                            </AvatarContent>
+                            </MudChip> 
+                        }
+                    </MudChipSet>
+
+                    <MudButton @onclick="OpenDialogAsync" Variant="Variant.Filled" Color="Color.Primary">
+                        Open Dialog
+                    </MudButton>
+                    
+                    
+                
+            </MudNavMenu>
+        </MudDrawer>
+        <div class="d-flex justify-center align-center mud-height-full">
+            <MudButton OnClick="@ToggleDrawer" Color="Color.Primary">Toggle</MudButton>
+        </div>
+    </MudDrawerContainer>
+</MudPaper>
+
+
 
 
 
@@ -105,7 +146,7 @@
                     <div class="cards__container">
                         <MudContainer Class="d-flex justify-end flex-grow-1">
                             <MudChipSet T="string" @bind-SelectedChips="selectedCoders" SelectionMode="SelectionMode.MultiSelection" CheckMark>
-                                <MudChip Class="border-solid border-2 mud-b mud-border-white" Icon="@Icons.Material.Rounded.PersonAddAlt1" Variant="Variant.Text" Color="Color.Secondary" OnClick="@(() => SelectCoder(coder.Id))">
+                                <MudChip Class="border-solid border-2 mud-b mud-border-white" Icon="@Icons.Material.Rounded.PersonAddAlt1" Variant="Variant.Text" Color="Color.Secondary"  @onclick="() => AddCoderToGroup(coder)">
                                 </MudChip>
                             </MudChipSet>
                         </MudContainer>
@@ -113,6 +154,8 @@
                             <div class="cards__coder">
                                 <h6>@coder.FirstName @coder.FirstLastName</h6>
                                 <p>@coder.Stack</p>
+                                <!-- Añadir el evento OnClick al ícono -->
+                            
                             </div>
                         </div>
                         @*badges*@
@@ -128,7 +171,7 @@
                         }
                         else
                         {
-                           <MudText Typo="Typo.h6">No hay habilidades que mostrar</MudText>
+                            <MudText Typo="Typo.h6">No hay habilidades que mostrar</MudText>
                         }
                         @*Buttons*@
                         <MudContainer>
@@ -153,7 +196,7 @@ else
 }
 
 @code
-{
+{   
     public string ButtonDetails = "Detalle";
     private List<Coder>? coders;
     
@@ -177,10 +220,46 @@ else
     private string? skills;
     private string? languageLevel;
     private string? searchText;
+      private List<Coder> _selectedCoders = new(); // Lista de programadores seleccionados
 
     private bool FilterApplied = false;
 
+
+    private Task OpenDialogAsync()
+    {    
+        var options = new DialogOptions { CloseOnEscapeKey = true };
+
+        return DialogService.ShowAsync<DialogKeyboardNavigationExample_Dialog>("Simple Dialog", options);
+    }
     
+    
+    @* logica para modal existente *@
+    private bool _open = false;
+
+    private void ToggleDrawer()
+    {
+        _open = !_open;
+    } 
+
+    // Método para agregar un programador al grupo
+    public void AddCoderToGroup(Coder coder)
+    {
+        if (!_selectedCoders.Contains(coder))
+        {
+            _selectedCoders.Add(coder); // Agregar el coder a la lista de seleccionados
+        }
+    }    // Método para eliminar un programador del grupo cuando se cierra un chip
+    public void RemoveCoderFromGroup(MudChip<string> chip)
+    {
+        var coderToRemove = _selectedCoders.FirstOrDefault(c => $"{c.FirstName} {c.FirstLastName}" == chip.Text);
+        if (coderToRemove != null)
+        {
+            _selectedCoders.Remove(coderToRemove); // Eliminar el coder de la lista de seleccionados
+        }
+    }    // Método Add que ya tienes (puedes adaptarlo si es necesario)
+    private int _i = 1;
+    private List<string> _values = new();
+    public void Add() => _values.Add("Value " + (_i++));
     
 
     protected override async Task OnInitializedAsync()
