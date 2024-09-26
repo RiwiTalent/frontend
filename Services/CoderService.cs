@@ -28,5 +28,14 @@ namespace riwi.Services
             return response.IsSuccessStatusCode;
         }
 
+        public async Task<bool> DeleteCoderAsync(int id)
+        {
+            var url = $"http://localhost:5113/riwitalent/{id}/deletecoder";
+
+            var response = await _httpClient.DeleteAsync(url); // Enviar como DELETE
+            return response.IsSuccessStatusCode;
+        }
+
+        
     }
 }

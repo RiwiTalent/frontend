@@ -1,10 +1,8 @@
 @page "/detailgroups"
 @using Microsoft.AspNetCore.Authorization;
-@using Microsoft.AspNetCore.Components.Authorization;
 @using riwi.Services;
 @using riwi.Models;
-@inject GroupsServices GroupsServices; 
-@inject NavigationManager NavigationManager;
+@inject GroupsServices GroupsServices;
 @attribute [Authorize]
 
 <PageTitle>Detalle Grupo</PageTitle>
@@ -12,32 +10,79 @@
 <AuthorizeView>
     <Authorized>
         <MudContainer Class="d-flex flex-grow-1 flex-column">
-            <!-- Botón y Edición -->
+            <!-- Botón para volver y alternar edición -->
             <MudContainer Class="d-flex justify-space-between flex-grow-1 gap-4 pa-3 ma-2">
                 <MudIconButton Href="/Home" Icon="@Icons.Material.Rounded.KeyboardArrowLeft" Color="Color.Secondary" Class="border-solid border-2 mud-border-secondary pa-2"></MudIconButton>
-                <MudButton Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.Edit" Color="Color.Secondary">Editar</MudButton>
+                @if (!isEditMode)
+                {
+                    <MudButton Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.Edit" Color="Color.Secondary" OnClick="EnableEditMode">
+                        Editar
+                    </MudButton>
+                }
+                else
+                {
+                    <MudButton Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.Save" Color="Color.Primary" OnClick="SaveChanges">
+                        Guardar
+                    </MudButton>
+                }
             </MudContainer>
-            <MudContainer>
-                <MudPaper Elevation="0" class="content_left-container_top">
-                    @if (!string.IsNullOrEmpty(Group.Id))
+
+            <!-- Detalles del Grupo (Modo de Visualización y Edición) -->
+            <MudPaper Elevation="0" class="content_left-container_top">
+                <MudText>
+                    @if (!isEditMode)
                     {
-                        <MudImage class="photo-modal-coder" Src="@Group.Name" />
+                        <b>@Group.Name</b>
                     }
                     else
                     {
-                        <MudAvatar Color="Color.Primary" Class="photo-modal-coder">
-                            @((Group.Name?[0] ?? ' ') + (Group.Description?[0] ?? ' '))
-                        </MudAvatar>
+                        <MudTextField T="string" @bind-Value="Group.Name" Label="Nombre del Grupo" />
                     }
-                    <p class="content_left-container_top__stack">@Group.Status</p>
-                    <p class="content_left-container_top__standar">@Group.Created_At</p>
-                </MudPaper>
-            </MudContainer>
+                </MudText>
+
+                <MudText Color="Color.Primary" Typo="Typo.subtitle2">
+                    @if (!isEditMode)
+                    {
+                        @Group.Status
+                    }
+                    else
+                    {
+                        <MudTextField T="string" @bind-Value="Group.Status" Label="Estado del Grupo" />
+                    }
+                </MudText>
+
+                @if (isEditMode)
+                {
+                    <MudTextField T="string" @bind-Value="Group.Description" Label="Descripción del Grupo" />
+                }
+            </MudPaper>
         </MudContainer>
     </Authorized>
 </AuthorizeView>
 
-@code{
+@code {
+    private bool isEditMode = false;  // Modo de edición
     private List<Group>? groups;
+
     [Parameter] public Group Group { get; set; }
+
+    private void EnableEditMode()
+    {
+        isEditMode = true;
+    }
+
+    private async Task SaveChanges()
+    {
+        // Aquí puedes llamar al servicio de backend para guardar los cambios
+        var response = await GroupsServices.UpdateGroupAsync(Group); // Supuesto método de servicio
+        if (response)
+        {
+            isEditMode = false;
+            // Mostrar mensaje de éxito o redirigir a otra página
+        }
+        else
+        {
+            // Manejar el error en la actualización
+        }
+    }
 }

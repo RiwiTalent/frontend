@@ -1,4 +1,5 @@
 using System.Net.Http.Json;
+using Microsoft.AspNetCore.Components;
 using riwi.Models;
 
 namespace riwi.Services
@@ -18,6 +19,11 @@ namespace riwi.Services
         public async Task<List<Group>> GetGroupsAsync()
         {
             return await _client.GetFromJsonAsync<List<Group>>("http://localhost:5113/riwitalent/groups");
+        }
+        public async Task<bool> UpdateGroupAsync(Group group)
+        {
+            var response = await HttpClient.PutAsJsonAsync($"api/groups/{group.Id}", group);
+            return response.IsSuccessStatusCode;
         }
 
         
