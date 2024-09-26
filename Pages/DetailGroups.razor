@@ -1,9 +1,10 @@
-@page "/DetailGroups"
+@page "/detailgroups"
 @using Microsoft.AspNetCore.Authorization;
 @using Microsoft.AspNetCore.Components.Authorization;
 @using riwi.Services;
-@inject GroupsServices GroupsServices; 
 @using riwi.Models;
+@inject GroupsServices GroupsServices; 
+@inject NavigationManager NavigationManager;
 @attribute [Authorize]
 
 <PageTitle>Detalle Grupo</PageTitle>
@@ -16,6 +17,27 @@
                 <MudIconButton Href="/Home" Icon="@Icons.Material.Rounded.KeyboardArrowLeft" Color="Color.Secondary" Class="border-solid border-2 mud-border-secondary pa-2"></MudIconButton>
                 <MudButton Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.Edit" Color="Color.Secondary">Editar</MudButton>
             </MudContainer>
+            <MudContainer>
+                <MudPaper Elevation="0" class="content_left-container_top">
+                    @if (!string.IsNullOrEmpty(Group.Id))
+                    {
+                        <MudImage class="photo-modal-coder" Src="@Group.Name" />
+                    }
+                    else
+                    {
+                        <MudAvatar Color="Color.Primary" Class="photo-modal-coder">
+                            @((Group.Name?[0] ?? ' ') + (Group.Description?[0] ?? ' '))
+                        </MudAvatar>
+                    }
+                    <p class="content_left-container_top__stack">@Group.Status</p>
+                    <p class="content_left-container_top__standar">@Group.Created_At</p>
+                </MudPaper>
+            </MudContainer>
         </MudContainer>
     </Authorized>
 </AuthorizeView>
+
+@code{
+    private List<Group>? groups;
+    [Parameter] public Group Group { get; set; }
+}

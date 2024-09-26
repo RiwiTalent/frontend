@@ -33,16 +33,16 @@
 
                 <!-- Grid de coders -->
                 <MudDataGrid T="Coder"
-                             Class="flex-grow-1 pa-2 rounded-lg"
-                             LoadingProgressColor="Color.Info"
-                             Hover="true"
-                             Items="@_coders"
-                             MultiSelection="true"
-                             QuickFilter="@_quickFilter">
+                            Class="flex-grow-1 pa-2 rounded-lg"
+                            LoadingProgressColor="Color.Info"
+                            Hover="true"
+                            Items="@_coders"
+                            MultiSelection="true"
+                            QuickFilter="@_quickFilter">
                     <ToolBarContent>
                         <MudTextField @bind-Value="_searchString" Immediate="true" Variant="Variant.Outlined"
-                                      Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search"
-                                      AdornmentColor="Color.Primary">
+                                    Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search"
+                                    AdornmentColor="Color.Primary">
                         </MudTextField>
                         <MudSpacer/>
                         <MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Large" StartIcon="@Icons.Material.Rounded.PersonAdd">

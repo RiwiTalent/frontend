@@ -19,5 +19,7 @@ namespace riwi.Services
         {
             return await _client.GetFromJsonAsync<List<Group>>("http://localhost:5113/riwitalent/groups");
         }
+
+        
     }
 }
