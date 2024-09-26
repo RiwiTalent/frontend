@@ -1,11 +1,17 @@
-@page "/detailgroups"
+@page "/DetailGroups"
 @using Microsoft.AspNetCore.Authorization;
+@using Microsoft.AspNetCore.Components.Authorization;
 @using riwi.Services;
 @using riwi.Models;
-@inject GroupsServices GroupsServices;
+@inject GroupsServices GroupsServices; 
 @attribute [Authorize]
 
-<PageTitle>Detalle Grupo</PageTitle>
+<PageTitle>Grupos</PageTitle>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <MudAlert Severity="Severity.Error">@errorMessage</MudAlert>
+}
 
 <AuthorizeView>
     <Authorized>
@@ -27,7 +33,7 @@
                 }
             </MudContainer>
 
-            <!-- Detalles del Grupo (Modo de Visualización y Edición) -->
+            @* <!-- Detalles del Grupo (Modo de Visualización y Edición) -->
             <MudPaper Elevation="0" class="content_left-container_top">
                 <MudText>
                     @if (!isEditMode)
@@ -55,7 +61,7 @@
                 {
                     <MudTextField T="string" @bind-Value="Group.Description" Label="Descripción del Grupo" />
                 }
-            </MudPaper>
+            </MudPaper> *@
         </MudContainer>
     </Authorized>
 </AuthorizeView>
@@ -63,6 +69,7 @@
 @code {
     private bool isEditMode = false;  // Modo de edición
     private List<Group>? groups;
+    private string errorMessage;
 
     [Parameter] public Group Group { get; set; }
 

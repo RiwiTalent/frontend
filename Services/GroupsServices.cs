@@ -22,8 +22,7 @@ namespace riwi.Services
         }
         public async Task<bool> UpdateGroupAsync(Group group)
         {
-            var response = await HttpClient.PutAsJsonAsync($"api/groups/{group.Id}", group);
-            return response.IsSuccessStatusCode;
+            return await _client.GetFromJsonAsync($"http://localhost:5113/riwitalent/groupDetails/{group.Id}");
         }
 
         
